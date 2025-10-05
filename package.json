@@ -1,12 +1,7 @@
 {
-  "name": "webtopdf-api",
-  "version": "1.0.0",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "puppeteer": "20.9.0"
-  },
-  "scripts": {
-    "start": "node server.js"
+    "puppeteer": "^24.23.0"
   }
 }
