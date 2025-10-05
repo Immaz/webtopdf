@@ -2,9 +2,7 @@ const puppeteer = require("puppeteer");
 require("dotenv").config();
 
 async function convert(req, res) {
-  // const { url } = req.body;
-  const url =
-    "https://vilosoftware.website/printQuoteInvoice.php?quoteId=E1V4YSZPU1";
+  const { url } = req.body;
 
   if (!url) {
     return res.status(400).send("URL is required.");
