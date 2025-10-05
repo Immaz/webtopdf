@@ -1,8 +1,10 @@
 const express = require("express");
-const cors = require("cors");
 const puppeteer = require("puppeteer");
+const cors = require("cors");
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 
@@ -27,13 +29,16 @@ app.post("/convert", async (req, res) => {
 
     const page = await browser.newPage();
 
-    await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
-    await page.goto(url, { waitUntil: "networkidle0", timeout: 60000 });
+    if (html) {
+      await page.setContent(html, { waitUntil: "networkidle0" });
+    } else if (url) {
+      await page.goto(url, { waitUntil: "networkidle0", timeout: 60000 });
+    }
 
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
-      scale: 0.525, // 👈 main factor for fitting
+      scale: 0.8, // 🔸 shrink content to fit page
       margin: { top: "10mm", right: "10mm", bottom: "10mm", left: "10mm" },
     });
 
@@ -44,6 +49,7 @@ app.post("/convert", async (req, res) => {
       "Content-Disposition": 'attachment; filename="converted.pdf"',
       "Content-Length": pdfBuffer.length,
     });
+
     res.send(pdfBuffer);
   } catch (error) {
     console.error("PDF conversion failed:", error);
@@ -54,8 +60,6 @@ app.post("/convert", async (req, res) => {
   }
 });
 
-// Start the server
-const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 PDF converter server running on http://localhost:${PORT}`);
+  console.log(`✅ Server is running on port ${PORT}`);
 });
