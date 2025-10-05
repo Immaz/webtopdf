@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const puppeteer = require("puppeteer");
 const cors = require("cors");
@@ -6,7 +5,6 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 
@@ -19,7 +17,7 @@ app.post("/convert", async (req, res) => {
 
   let browser;
   try {
-    // Launch Puppeteer with bundled Chromium
+    // Launch Puppeteer (bundled Chromium will be used automatically)
     browser = await puppeteer.launch({
       headless: true,
       args: [
@@ -32,28 +30,24 @@ app.post("/convert", async (req, res) => {
 
     const page = await browser.newPage();
 
-    // Optional: set a default viewport
+    // Optional: set default viewport for consistent PDF rendering
     await page.setViewport({ width: 1200, height: 800 });
 
     if (html) {
-      // Convert raw HTML
       await page.setContent(html, { waitUntil: "networkidle0" });
     } else if (url) {
-      // Convert URL with timeout of 2 minutes
       await page.goto(url, { waitUntil: "networkidle0", timeout: 120000 });
     }
 
-    // Generate PDF
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
-      scale: 0.8, // shrink content to fit page
+      scale: 0.8,
       margin: { top: "10mm", right: "10mm", bottom: "10mm", left: "10mm" },
     });
 
     await browser.close();
 
-    // Send PDF as response
     res.set({
       "Content-Type": "application/pdf",
       "Content-Disposition": 'attachment; filename="converted.pdf"',
