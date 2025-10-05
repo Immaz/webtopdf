@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const puppeteer = require("puppeteer");
 const cors = require("cors");
@@ -17,8 +18,12 @@ app.post("/convert", async (req, res) => {
 
   let browser;
   try {
+    // Use system Chrome on Render
+    const chromePath = process.env.CHROME_PATH || "/usr/bin/google-chrome"; // fallback if env var not set
+
     browser = await puppeteer.launch({
       headless: true,
+      executablePath: chromePath,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
@@ -38,7 +43,7 @@ app.post("/convert", async (req, res) => {
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
-      scale: 0.8, // 🔸 shrink content to fit page
+      scale: 0.8, // shrink content to fit page
       margin: { top: "10mm", right: "10mm", bottom: "10mm", left: "10mm" },
     });
 
