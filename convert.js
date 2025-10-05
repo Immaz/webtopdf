@@ -1,16 +1,13 @@
-const express = require("express");
-const cors = require("cors");
 const puppeteer = require("puppeteer");
+require("dotenv").config();
 
-const app = express();
-app.use(cors());
-app.use(express.json({ limit: "10mb" }));
+async function convert(req, res) {
+  // const { url } = req.body;
+  const url =
+    "https://vilosoftware.website/printQuoteInvoice.php?quoteId=E1V4YSZPU1";
 
-app.post("/convert", async (req, res) => {
-  const { html, url } = req.body;
-
-  if (!html && !url) {
-    return res.status(400).send("HTML content or URL is required.");
+  if (!url) {
+    return res.status(400).send("URL is required.");
   }
 
   let browser;
@@ -52,10 +49,6 @@ app.post("/convert", async (req, res) => {
       .status(500)
       .send(`Failed to convert HTML to PDF. Error: ${error.message}`);
   }
-});
+}
 
-// Start the server
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 PDF converter server running on http://localhost:${PORT}`);
-});
+module.exports = { convert };
