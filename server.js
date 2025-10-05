@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const puppeteer = require("puppeteer");
+require("dotenv").config();
 
 const app = express();
 app.use(cors());
@@ -17,6 +18,10 @@ app.post("/convert", async (req, res) => {
   try {
     browser = await puppeteer.launch({
       headless: true,
+      executablePath:
+        process.env.NODE_ENV === "production"
+          ? process.env.PUPPETEER_EXECUTABLE_PATH
+          : puppeteer.executablePath(),
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
